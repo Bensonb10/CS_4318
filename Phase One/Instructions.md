@@ -1,4 +1,4 @@
-# Phase 1 Instruction
+# [Phase 1 Instruction](http://cms.dt.uh.edu/faculty/yuans/courses/cs4318/projects/phase1.htm)
 
 The report for this phase includes:
 
