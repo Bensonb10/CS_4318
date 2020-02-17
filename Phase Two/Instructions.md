@@ -18,24 +18,16 @@ Using the method for translating an E/R diagram to relations, produce a set of t
 
  
 
-## - Complete Database Functionalities and User Interface  (40 points)
+**Complete Database Functionalities and User Interface  (40 points)**
+* List all actors (i.e. users) of your database
+* For each actor, list all use-cases including all the steps. For each entity, you must have use cases that perform at least one aggregate query, one insert operation, one delete operation, and one update operation; For each relationship, you must have use cases that perform at least one joint query. (That’s a minimum of 34 use cases for 7 entities, and 44 use cases for 9 entities)
+* Use Case Realization: Explain how the relations and relationships are used in EACH of the use cases. Provide the complete SQL statements for every use case.
+* Specify the web interface if you are implementing it. 
 
-        - List all actors (i.e. users) of your database
+**Database Prototype  (10 points)**
+* Describe platform and any software tools you plan to use to implement your project.
+* Clearly indicate how you plan to populate your database.
 
-        - For each actor, list all use-cases including all the steps. For each entity, you must have use cases that perform at least one aggregate query, one insert operation, one delete operation, and one update operation; For each relationship, you must have use cases that perform at least one joint query. (That’s a minimum of 34 use cases for 7 entities, and 44 use cases for 9 entities)
-
-        - Use Case Realization: Explain how the relations and relationships are used in EACH of the use cases. Provide the complete SQL statements for every use case.
-
-        - Specify the web interface if you are implementing it. 
-
-## - Database Prototype  (10 points)
-
-        - Describe platform and any software tools you plan to use to implement your project.
-
-        - Clearly indicate how you plan to populate your database.
-
-## -  Project Time Table  (10 points)
-
-        - List major tasks to a be completed
-
-        - For each task, indicate team member responsible for competing task, and planned completion dates.
+**Project Time Table  (10 points)**
+* List major tasks to a be completed
+* For each task, indicate team member responsible for competing task, and planned completion dates.
