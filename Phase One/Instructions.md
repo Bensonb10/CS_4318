@@ -16,3 +16,4 @@ The report for this phase includes:
 
 * A list of uses cases that include actor and step-by-step descriptions. For every entity, you must have one use case that perform one insert operation, one delete operation, and one update operation.  You must also have one use case for every relationship. __That’s a minimum of 27 use cases for 7 entities, and 35 use cases for 9 entities__ (30 pts)
 
+Within __2 weeks__ after the submission, you may reorganize your team without a penalty. You can leave a team, join another team, or form a new team. Each team must have at least 2 and up to 3 members. However, this is the only time you can do so without penalty. So be sure about who you want to work with for the remaining of the semester. Send me an email and copy all current/new team members about your decision.
