@@ -6,14 +6,12 @@ In this second phase, you will produce a relational schema from the entity-relat
 
 Submit the following:
 
-## - Complete E/R diagram from Phase 1 (20 points)
-
+**Complete E/R diagram from Phase 1 (20 points)**
 On you E/R diagram, clearly describe each entity (including, list of entity attributes, and the primary key), and each relationship with its multiplicities.
 
  
 
-## - Relational Model  (20 points)
-
+**Relational Model  (20 points)**
 Using the method for translating an E/R diagram to relations, produce a set of tables for your database design. For each table, specify the attributes, their domains, required data constraints, default values, primary key, candidate keys, foreign keys and the tables which the foreign keys are referencing (everything you need for a CREATE TABLE statement)
 
  
