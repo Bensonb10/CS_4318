@@ -3,11 +3,11 @@ using MySql.Data.MySqlClient;
 
 namespace LearningMadeSimple.Models
 {
-    public class LMS_db
+    public class DB
     {
         public MySqlConnection Connection { get;  }
 
-        public LMS_db(string connectionString)
+        public DB(string connectionString)
         {
             Connection = new MySqlConnection(connectionString);
         }

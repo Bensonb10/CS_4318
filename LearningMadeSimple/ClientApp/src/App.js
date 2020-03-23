@@ -1,58 +1,102 @@
-import React, { Component } from 'react';
-import API from './utils/API'
+/// <reference path="utils/api.js" />
+import React, { Component, useState, useEffect } from "react";
+import API from "./utils/API";
+import axios from 'axios'
 
-export default class App extends Component {
-    static displayName = App.name;
 
-    state = {
-        students: [],
+export default () => {
+    const [state, setState] = useState({
         student: {},
-        Name: ''
+        students: [],
+        Name: ""
+    });
+
+    useEffect(() => {
+        API.getStudents().then(resp => {
+            console.log(resp.data)
+            setState(state => ({ ...state, students: resp.data }))
+        });
+
+        axios.get('api/roster')
+            .then(data => console.log(data.data.result))
+    }, []);
+
+    const updateForm = ({ target }) =>
+        setState({
+            ...state,
+            [target.name]: target.value
+        });
+
+    const submit = () => {
+        API.postStudent({ Name: state.Name }).then(resp =>
+            setState({
+                ...state,
+                Name: '',
+                students: [...state.students, resp.data]
+            })
+        );
+    };
+
+    const deleteStudent = id => {
+        API.deleteStudent(id).then(resp =>
+            setState({
+                ...state,
+                student: resp.data,
+                students: state.students.filter(stud => stud.studentId !== id)
+            })
+        );
+    };
+
+    const selectStudent = id => {
+        API.getStudent(id).then(resp =>
+            setState({
+                ...state,
+                student: resp.data
+            })
+        );
+    };
+
+    const edit = () => {
+        API.putStudent({...state.student, first_name: state.Name })
+            .then(resp => 
+                setState({
+                    ...state,
+                    student: resp.data,
+                    students: state.students.map(s => s.studentId === state.student.studentId ? resp.data : s)
+                })
+            )
     }
 
-    handleChange = ({ target }) => this.setState({ [target.name]: target.value })
-
-    componentDidMount() {
-        API.getStudents()
-            .then(resp => this.setState({ students: resp.data }, () => console.log(this.state)))
-    }
-
-    submit = () => {
-        API.postStudent({ Name: this.state.Name })
-            .then(resp => this.setState({ student: resp.data, students: [...this.state.students, resp.data] }, () => console.log(this.state)))
-    }
-
-    delete = id => {
-        API.deleteStudent(id)
-            .then(resp => this.setState({ students: this.state.students.filter(stud => stud.id !== id) }))
-    }
-
-    selectStudent = id => {
-        API.getStudent(id)
-            .then(resp => this.setState({ student: resp.data }, () => console.log(this.state)))
-    }
-
-    render() {
-        return <>
-            <h1>Hello: {Object.keys(this.state.student).length ? this.state.student.name : "Visitor"}</h1>
-
-            <hr />
-
-            <input type="text" name="Name" value={this.state.Name} onChange={this.handleChange} />
-            <br />
-            <button onClick={this.submit}>Add</button>
-
-            <hr />
+    return (
+        <>
+            <h1>
+                Hello: {Object.keys(state.student).length
+                    ? state.student.first_name + " " + state.student.last_name
+                    : "Visitor"}
+            </h1>
 
             {
-                this.state.students.map((stud, i) => <div key={i + '-student'}>
-                    <h4 onClick={() => this.selectStudent(stud.id)}>{stud.name}</h4>
-
-                    <button onClick={() => this.delete(stud.id)}>X</button>
-                </div>)
+                state.student.first_name && <>
+                    <input type="text" name="Name" value={state.Name} onChange={updateForm} />
+                    <button onClick={edit}>Edit</button>
+                    </>
             }
 
+            <hr />
 
+            <input type="text" name="Name" value={state.Name} onChange={updateForm} />
+            <br />
+            <button onClick={submit}>Add</button>
+
+            <hr />
+
+            {state.students.map((stud, i) => (
+                <div key={i + "-student"}>
+                    <h4 onClick={() => selectStudent(stud.studentId)}>{stud.first_name}</h4>
+
+                    <button onClick={() => deleteStudent(stud.studentId)}>X</button>
+                </div>
+            ))}
         </>
-    }
-}
+    );
+};
