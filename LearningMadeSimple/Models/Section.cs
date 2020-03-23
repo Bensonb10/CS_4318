@@ -1,58 +1,56 @@
 ﻿using MySql.Data.MySqlClient;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace LearningMadeSimple.Models
 {
-    public class Student
+    public class Section
     {
         internal DB Db { get; set; }
-        public int StudentId { get; set; }
-        public string First_name { get; set; }
-        public string Last_name { get; set; }
+        public virtual int SectionId { get; set; }
+        public string Name { get; set; }
 
 
 
+        public Section() { }
 
-        public Student() { }
-
-        internal Student(DB db)
+        public Section(DB db)
         {
             Db = db;
         }
 
-        public async Task InsertAsync()
+        public virtual async Task InsertAsync()
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"INSERT INTO `Student` (`first_name`, `last_name`) VALUES (@first_name, @last_name);";
+            cmd.CommandText = @"INSERT INTO `Section` (`Name`) VALUES (@name);";
             BindParams(cmd);
             await cmd.ExecuteNonQueryAsync();
-            StudentId = (int)cmd.LastInsertedId;
+            SectionId = (int)cmd.LastInsertedId;
         }
 
-        public async Task UpdateAsync()
+        public virtual async Task UpdateAsync()
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"UPDATE `Student` SET `first_name`=@first_name, `last_name`=@last_name WHERE `studentId`=@id;";
+            cmd.CommandText = @"UPDATE `Section` SET `Name` = @name WHERE `section` = @id;";
             BindParams(cmd);
             BindId(cmd);
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task DeleteAsync()
+        public virtual async Task DeleteAsync()
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"DELETE FROM `Student` WHERE `studentId` = @id;";
+            cmd.CommandText = @"DELETE FROM `Section` WHERE `sectionId` = @id;";
             BindId(cmd);
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<Student> FindOneAsync(int id)
+        public async Task<Section> FindOneAsync(int id)
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"SELECT * FROM `Student` WHERE `studentId` = @id;";
+            cmd.CommandText = @"SELECT * FROM `Section` WHERE `sectionId` = @id;";
             cmd.Parameters.Add(new MySqlParameter
             {
                 ParameterName = "@id",
@@ -63,31 +61,30 @@ namespace LearningMadeSimple.Models
             return result.Count > 0 ? result[0] : null;
         }
 
-        public async Task<List<Student>> GetAllAsync()
+        public async Task<List<Section>> GetAllAsync()
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"SELECT * FROM `Student`;";
+            cmd.CommandText = @"SELECT * FROM `Section`;";
             return await ReadAllAsync(await cmd.ExecuteReaderAsync());
         }
 
-        private async Task<List<Student>> ReadAllAsync(DbDataReader reader)
+        private async Task<List<Section>> ReadAllAsync(DbDataReader reader)
         {
-            var students = new List<Student>();
+            var sections = new List<Section>();
 
             using (reader)
             {
                 while (await reader.ReadAsync())
                 {
-                    var student = new Student(Db)
+                    var section = new Section(Db)
                     {
-                        StudentId = reader.GetInt32(0),
-                        First_name = reader.GetString(1),
-                        Last_name = reader.GetString(2)
+                        SectionId = reader.GetInt32(0),
+                        Name = reader.GetString(1)
                     };
-                    students.Add(student);
+                    sections.Add(section);
                 }
             }
-            return students;
+            return sections;
         }
 
         private void BindId(MySqlCommand cmd)
@@ -96,7 +93,7 @@ namespace LearningMadeSimple.Models
             {
                 ParameterName = "@id",
                 DbType = DbType.Int32,
-                Value = StudentId
+                Value = SectionId
             });
         }
 
@@ -104,16 +101,9 @@ namespace LearningMadeSimple.Models
         {
             cmd.Parameters.Add(new MySqlParameter
             {
-                ParameterName = "@first_name",
+                ParameterName = "@name",
                 DbType = DbType.String,
-                Value = First_name,
-            });
-
-            cmd.Parameters.Add(new MySqlParameter
-            {
-                ParameterName = "@last_name",
-                DbType = DbType.String,
-                Value = Last_name,
+                Value = Name,
             });
         }
     }
