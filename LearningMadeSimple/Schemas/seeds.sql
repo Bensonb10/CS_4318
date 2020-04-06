@@ -65,13 +65,13 @@ values
 --    
 
 insert into
-	Class(degree_id, className)
+	Class(department_id, className)
 VALUES	
-	(2, "Intro to Python"),
-	(2, "Introduction to Software Engineering"),
-	(2, "Database Management Systems"),
-	(3, "Discrete Mathematics I"),
-	(3, "Linear Algebra I");
+	(4, "Intro to Python"),
+	(4, "Introduction to Software Engineering"),
+	(4, "Database Management Systems"),
+	(4, "Discrete Mathematics I"),
+	(4, "Linear Algebra I");
 
 --
 
@@ -89,15 +89,15 @@ values
 insert into 
 	Roster(student_id, section_id) 
 values 
-	(1,1),
-	(1,2),
-	(1,3),
-	(1,4),
-	(1,5),
-	(2, 2),
-	(2, 3),
-	(3, 2), 
-	(3, 3);
+	(1,1), -- 1
+	(1,2), -- 2
+	(1,3), -- 3
+	(1,4), -- 4
+	(1,5), -- 5
+	(2, 2), -- 6
+	(2, 3), -- 7
+	(3, 2),  -- 8
+	(3, 3); -- 9
     
 --
 
@@ -144,37 +144,40 @@ values
 --
 
 insert INTO	
-	Submission(submission, section_id, assn_id, student_id)
+	Submission(submission, roster_id, assn_id)
 VALUES
-	("SUBMISSION", 1, 1, 1),
-	("SUBMISSION", 1, 2, 1),
-	("SUBMISSION", 1, 3, 1),
-	("SUBMISSION", 2, 4, 1),
-	("SUBMISSION", 2, 5, 1),
-	("SUBMISSION", 2, 6, 1),
-	("SUBMISSION", 3, 7, 1),
-	("SUBMISSION", 3, 8, 1),
-	("SUBMISSION", 3, 9, 1),
-	("SUBMISSION", 4, 10, 1),
-	("SUBMISSION", 4, 11, 1),
-	("SUBMISSION", 4, 12, 1),
-	("SUBMISSION", 5, 13, 1),
-	("SUBMISSION", 5, 14, 1),
-	("SUBMISSION", 5, 15, 1),
-	("SUBMISSION", 2, 4, 2),
-	("SUBMISSION", 2, 5, 2),
-	("SUBMISSION", 2, 6, 2),
-	("SUBMISSION", 3, 7, 2),
-	("SUBMISSION", 3, 8, 2),
-	("SUBMISSION", 3, 9, 2),
-	("SUBMISSION", 2, 4, 3),
-	("SUBMISSION", 2, 5, 3),
-	("SUBMISSION", 2, 6, 3),
-	("SUBMISSION", 3, 7, 3),
-	("SUBMISSION", 3, 8, 3),
-	("SUBMISSION", 3, 9, 3);
+	("Submission", 1, 1),
+	("Submission", 1, 2),
+	("Submission", 1, 3),
 
-SELECT 
-    *
-FROM
-    Assignment;
+	("Submission", 2, 4),
+	("Submission", 2, 5),
+	("Submission", 2, 6),
+
+	("Submission", 3, 7),
+	("Submission", 3, 8),
+	("Submission", 3, 9),
+
+	("Submission", 4, 10),
+	("Submission", 4, 11),
+	("Submission", 4, 12),
+
+	("Submission", 5, 13),
+	("Submission", 5, 14),
+	("Submission", 5, 15),
+
+	("Submission", 6, 4),
+	("Submission", 6, 5),
+	("Submission", 6, 6),
+
+	("Submission", 7, 7),
+	("Submission", 7, 8),
+	("Submission", 7, 9),
+
+	("Submission", 8, 4),
+	("Submission", 8, 5),
+	("Submission", 8, 6),
+
+	("Submission", 9, 7),
+	("Submission", 9, 8),
+	("Submission", 9, 9);

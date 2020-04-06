@@ -17,8 +17,10 @@ export default () => {
             setState(state => ({ ...state, students: resp.data }))
         });
 
-        axios.get('api/roster')
-            .then(data => console.log(data.data.result))
+        API.getStudentByDegreeId(1).then(data => console.log(data))
+
+        //axios.get('api/roster')
+        //    .then(data => console.log(data.data.result))
     }, []);
 
     const updateForm = ({ target }) =>
@@ -42,7 +44,7 @@ export default () => {
             setState({
                 ...state,
                 student: resp.data,
-                students: state.students.filter(stud => stud.studentId !== id)
+                students: state.students.filter(stud => stud.student_id !== id)
             })
         );
     };
@@ -62,7 +64,7 @@ export default () => {
                 setState({
                     ...state,
                     student: resp.data,
-                    students: state.students.map(s => s.studentId === state.student.studentId ? resp.data : s)
+                    students: state.students.map(s => s.student_id === state.student.student_id ? resp.data : s)
                 })
             )
     }
@@ -92,9 +94,9 @@ export default () => {
 
             {state.students.map((stud, i) => (
                 <div key={i + "-student"}>
-                    <h4 onClick={() => selectStudent(stud.studentId)}>{stud.first_name}</h4>
+                    <h4 onClick={() => selectStudent(stud.student_id)}>{stud.first_name}</h4>
 
-                    <button onClick={() => deleteStudent(stud.studentId)}>X</button>
+                    <button onClick={() => deleteStudent(stud.student_id)}>X</button>
                 </div>
             ))}
         </>

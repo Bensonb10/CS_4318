@@ -26,6 +26,17 @@ namespace LearningMadeSimple.Controllers
             return new OkObjectResult(result);
         }
 
+        // GET: api/student/GetByDegreeId/5
+        [HttpGet("getbydegreeid/{id}")]
+        public async Task<IActionResult> GetByDegreeId(int id)
+        {
+            await Db.Connection.OpenAsync();
+            var query = new Student(Db);
+            var result = await query.GetByDegreeId(id);
+            if (result is null) return new NotFoundResult();
+            return new OkObjectResult(result);
+        }
+
         // GET: api/student/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOne(int id)

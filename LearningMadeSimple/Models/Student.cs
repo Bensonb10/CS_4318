@@ -9,11 +9,18 @@ namespace LearningMadeSimple.Models
     public class Student
     {
         internal DB Db { get; set; }
-        public int StudentId { get; set; }
+        public Degree Degree{ get; set; }
+        public string Date_admitted { get; set; }
+        public int Student_id { get; set; }
         public string First_name { get; set; }
         public string Last_name { get; set; }
-
-
+        public string Address { get; set; }
+        public string City { get; set; }
+        public string State { get; set; }
+        public int Zip_code { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
 
 
         public Student() { }
@@ -26,10 +33,10 @@ namespace LearningMadeSimple.Models
         public async Task InsertAsync()
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"INSERT INTO `Student` (`first_name`, `last_name`) VALUES (@first_name, @last_name);";
+            cmd.CommandText = @"INSERT INTO `Student` (`degree_id`, `first_name`, `last_name`, `email`) VALUES (@degree_id, @first_name, @last_name, @email);";
             BindParams(cmd);
             await cmd.ExecuteNonQueryAsync();
-            StudentId = (int)cmd.LastInsertedId;
+            Student_id = (int)cmd.LastInsertedId;
         }
 
         public async Task UpdateAsync()
@@ -49,30 +56,12 @@ namespace LearningMadeSimple.Models
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<Student> FindOneAsync(int id)
-        {
-            using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"SELECT * FROM `Student` WHERE `studentId` = @id;";
-            cmd.Parameters.Add(new MySqlParameter
-            {
-                ParameterName = "@id",
-                DbType = DbType.Int32,
-                Value = id
-            });
-            var result = await ReadAllAsync(await cmd.ExecuteReaderAsync());
-            return result.Count > 0 ? result[0] : null;
-        }
-
         public async Task<List<Student>> GetAllAsync()
         {
-            using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"SELECT * FROM `Student`;";
-            return await ReadAllAsync(await cmd.ExecuteReaderAsync());
-        }
-
-        private async Task<List<Student>> ReadAllAsync(DbDataReader reader)
-        {
             var students = new List<Student>();
+            using var cmd = Db.Connection.CreateCommand();
+            cmd.CommandText = @"CALL SelectAllStudents()";
+            DbDataReader reader = await cmd.ExecuteReaderAsync();
 
             using (reader)
             {
@@ -80,14 +69,139 @@ namespace LearningMadeSimple.Models
                 {
                     var student = new Student(Db)
                     {
-                        StudentId = reader.GetInt32(0),
+                        Student_id = reader.GetInt32(0),
+                        Degree = new Degree
+                        {
+                            Degree_id = reader.GetInt32(9),
+                            DegreeName = reader.GetString(10),
+                            Department_id = reader.GetInt32(11),
+                            DepartmentName = reader.GetString(12)
+                        },
                         First_name = reader.GetString(1),
-                        Last_name = reader.GetString(2)
+                        Last_name = reader.GetString(2),
+                        Address = reader.GetString(5),
+                        City = reader.GetString(6),
+                        State = reader.GetString(7),
+                        Zip_code = reader.GetInt32(8),
+                        Phone = reader.GetString(3),
+                        Email = reader.GetString(4)
                     };
                     students.Add(student);
                 }
             }
             return students;
+        }
+
+        public async Task<Student> FindOneAsync(int id)
+        {
+            var students = new List<Student>();
+            using var cmd = Db.Connection.CreateCommand();
+            cmd.CommandText = @"CALL SelectStudentById(@id)";
+            cmd.Parameters.Add(new MySqlParameter
+            {
+                ParameterName = "@id",
+                DbType = DbType.Int32,
+                Value = id
+            });
+            var reader = await cmd.ExecuteReaderAsync();
+
+            using (reader)
+            {
+                while (await reader.ReadAsync())
+                {
+                    var student = new Student(Db)
+                    {
+                        Student_id = reader.GetInt32(0),
+                        Degree = new Degree
+                        {
+                            Degree_id = reader.GetInt32(9),
+                            DegreeName = reader.GetString(10),
+                            Department_id = reader.GetInt32(11),
+                            DepartmentName = reader.GetString(12)
+                        },
+                        First_name = reader.GetString(1),
+                        Last_name = reader.GetString(2),
+                        Address = reader.GetString(5),
+                        City = reader.GetString(6),
+                        State = reader.GetString(7),
+                        Zip_code = reader.GetInt32(8),
+                        Phone = reader.GetString(3),
+                        Email = reader.GetString(4)
+                    };
+                    students.Add(student);
+                }
+            }
+            return students.Count > 0 ? students[0] : null;
+        }    
+
+        public async Task<List<Student>> GetByDegreeId(int id)
+        {
+            var students = new List<Student>();
+            using var cmd = Db.Connection.CreateCommand();
+            cmd.CommandText = @"CALL SelectStudentByDegreeId(@id)";
+            cmd.Parameters.Add(new MySqlParameter
+            {
+                ParameterName = "@id",
+                DbType = DbType.Int32,
+                Value = id
+            });
+            DbDataReader reader = await cmd.ExecuteReaderAsync();
+
+            using (reader)
+            {
+                while (await reader.ReadAsync())
+                {
+                    var student = new Student(Db)
+                    {
+                        Student_id = reader.GetInt32(0),
+                        Degree = new Degree
+                        {
+                            Degree_id = reader.GetInt32(9),
+                            DegreeName = reader.GetString(10),
+                            Department_id = reader.GetInt32(11),
+                            DepartmentName = reader.GetString(12)
+                        },
+                        First_name = reader.GetString(1),
+                        Last_name = reader.GetString(2),
+                        Address = reader.GetString(5),
+                        City = reader.GetString(6),
+                        State = reader.GetString(7),
+                        Zip_code = reader.GetInt32(8),
+                        Phone = reader.GetString(3),
+                        Email = reader.GetString(4)
+                    };
+                    students.Add(student);
+                }
+            }
+            return students;
+        }
+
+        public async Task<Student> LoginStudent(string email)
+        {
+            using var cmd = Db.Connection.CreateCommand();
+            cmd.CommandText = @"CALL loginStudent(@email)";
+            cmd.Parameters.Add(new MySqlParameter
+            {
+                ParameterName = "@email",
+                DbType = DbType.String,
+                Value = email
+            });
+            var students = new List<Student>();
+            var reader = await cmd.ExecuteReaderAsync();
+            using (reader)
+            {
+                while(await reader.ReadAsync())
+                {
+                    var student = new Student(Db)
+                    {
+                        Student_id = reader.GetInt32(0),
+                        Email = reader.GetString(1),
+                        Password = reader.GetString(2)
+                    };
+                    students.Add(student);
+                }
+            }
+            return students.Count > 0 ? students[0] : null;
         }
 
         private void BindId(MySqlCommand cmd)
@@ -96,12 +210,19 @@ namespace LearningMadeSimple.Models
             {
                 ParameterName = "@id",
                 DbType = DbType.Int32,
-                Value = StudentId
+                Value = Student_id
             });
         }
 
         private void BindParams(MySqlCommand cmd)
         {
+            cmd.Parameters.Add(new MySqlParameter
+            {
+                ParameterName = "@degree_id",
+                DbType = DbType.Int32,
+                Value = Degree.Degree_id,
+            });
+
             cmd.Parameters.Add(new MySqlParameter
             {
                 ParameterName = "@first_name",
@@ -114,6 +235,13 @@ namespace LearningMadeSimple.Models
                 ParameterName = "@last_name",
                 DbType = DbType.String,
                 Value = Last_name,
+            });
+
+            cmd.Parameters.Add(new MySqlParameter
+            {
+                ParameterName = "@email",
+                DbType = DbType.String,
+                Value = Email,
             });
         }
     }

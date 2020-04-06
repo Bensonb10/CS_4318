@@ -1,11 +1,13 @@
-create database if not exists LearningMadeSimple; -- build
+create database if not exists LearningMadeSimple;
 use LearningMadeSimple;
 
-drop table if exists Roster;
+
 drop table if exists Submission;
+drop table if exists Roster;
 drop table if exists Assignment;
 drop table if exists AssignmentType;
 drop table if exists Section;
+drop table if exists semester;
 drop table if exists Class;
 drop table if exists Student;
 drop table if exists Degree;
@@ -29,7 +31,7 @@ CREATE TABLE IF NOT EXISTS Degree (
         REFERENCES Department (department_id)
 );
 
-CREATE TABLE Student (
+CREATE TABLE IF NOT EXISTS Student (
     student_id INT AUTO_INCREMENT NOT NULL,
     PRIMARY KEY (student_id),
     degree_id int,
@@ -40,13 +42,13 @@ CREATE TABLE Student (
     address VARCHAR(255) NOT NULL default "TBD",
     city VARCHAR(255) NOT NULL default "TBD",
     state VARCHAR(255) NOT NULL default "TBD",
-    zip_code INT(5) NOT NULL default 77024,
+    zip_code INT NOT NULL default 77024,
     phone VARCHAR(25) NOT NULL default "TBD",
     email VARCHAR(255) NOT NULL,
     password VARCHAR(25) NOT NULL default "asdf"
 );
 
-CREATE TABLE Employee (
+CREATE TABLE IF NOT EXISTS Employee (
     employee_id INT AUTO_INCREMENT,
     PRIMARY KEY (employee_id),
     department_id INT,
@@ -56,14 +58,14 @@ CREATE TABLE Employee (
     FOREIGN KEY (manager_id)
         REFERENCES Employee (employee_id),
     role enum("Admin", "Instructor") default "Instructor",
-    salary INT(7) NOT NULL default 50000,
+    salary INT NOT NULL default 50000,
     date_hired DATE DEFAULT '2000-01-01',
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     address VARCHAR(255) NOT NULL default "TBD",
     city VARCHAR(255) NOT NULL default "TBD",
     state VARCHAR(255) NOT NULL default "TBD",
-    zip_code INT(5) NOT NULL default 77024,
+    zip_code INT NOT NULL default 77024,
     phone VARCHAR(25) NOT NULL default "TBD",
     email VARCHAR(255) NOT NULL,
     password VARCHAR(25) NOT NULL default "asdf"
@@ -82,10 +84,10 @@ CREATE TABLE IF NOT EXISTS Class (
     PRIMARY KEY (class_id),
     className VARCHAR(255) not null,
     classDescription varchar(255) default "TBD",
-    degree_id INT,
+    department_id INT,
     credit_hours int default 3,
-    FOREIGN KEY (degree_id)
-        REFERENCES Degree (degree_id)
+    FOREIGN KEY (department_id)
+        REFERENCES Department (department_id)
 );
 
 CREATE TABLE IF NOT EXISTS Section (
@@ -132,7 +134,7 @@ CREATE TABLE IF NOT EXISTS AssignmentType (
         REFERENCES Section (section_id),
     
     type VARCHAR(25) not null,
-    points_possible INT(3)    
+    points_possible INT
 );
 
 CREATE TABLE IF NOT EXISTS Assignment (
@@ -154,13 +156,11 @@ CREATE TABLE IF NOT EXISTS Submission (
     PRIMARY KEY (submission_id),
     submission VARCHAR(8000),
     date_submitted DATETIME DEFAULT CURRENT_TIMESTAMP,
-    section_id INT,
-    FOREIGN KEY (section_id)
-        REFERENCES Section (section_id),
+    points_earned INT default 90,
+    roster_id INT,
+    FOREIGN KEY (roster_id)
+        REFERENCES Roster (roster_id),
     assn_id INT,
     FOREIGN KEY (assn_id)
-        REFERENCES Assignment (assn_id),
-    student_id INT,
-    FOREIGN KEY (student_id)
-        REFERENCES Student (student_id)
+        REFERENCES Assignment (assn_id)
 );
