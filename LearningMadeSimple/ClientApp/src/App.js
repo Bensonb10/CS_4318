@@ -19,6 +19,16 @@ export default () => {
 
         API.getStudentByDegreeId(1).then(data => console.log(data))
 
+        API.postStudent({
+            Degree: {
+                Degree_id: 1,
+            },            
+            First_name: "Hasan",
+            Last_name: "Smith",
+            Email: "test@gmail.cm"
+        }).then(data => console.log(data.data))
+            .catch(err => console.log(err))
+
         //axios.get('api/roster')
         //    .then(data => console.log(data.data.result))
     }, []);

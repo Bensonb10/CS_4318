@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace LearningMadeSimple.Models
@@ -10,17 +11,17 @@ namespace LearningMadeSimple.Models
     {
         internal DB Db { get; set; }
         public Degree Degree{ get; set; }
-        public string Date_admitted { get; set; }
+        public string Date_admitted { get; set; } = "2020-01-01";
         public int Student_id { get; set; }
         public string First_name { get; set; }
-        public string Last_name { get; set; }
-        public string Address { get; set; }
-        public string City { get; set; }
-        public string State { get; set; }
-        public int Zip_code { get; set; }
-        public string Phone { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public string Last_name { get; set; } = "TBD";
+        public string Address { get; set; } = "TBD";
+        public string City { get; set; } = "TBD";
+        public string State { get; set; } = "TBD";
+        public int Zip_code { get; set; } = 77024;
+        public string Phone { get; set; } = "TBD";
+        public string Email { get; set; } = "TBD";
+        public string Password { get; set; } = "asdf";
 
 
         public Student() { }
@@ -33,7 +34,12 @@ namespace LearningMadeSimple.Models
         public async Task InsertAsync()
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"INSERT INTO `Student` (`degree_id`, `first_name`, `last_name`, `email`) VALUES (@degree_id, @first_name, @last_name, @email);";
+            string text = @"INSERT INTO `Student` ";
+            text += @"(`degree_id`, `first_name`, `last_name`, `address`, `city`, `state`, `zip_code`, `phone`, `email`, `password`) ";
+            text += @"VALUES ";
+            text += @"(@degree_id, @first_name, @last_name,  @address, @city, @state, @zip_code, @phone, @email, @password);";
+
+            cmd.CommandText = text;
             BindParams(cmd);
             await cmd.ExecuteNonQueryAsync();
             Student_id = (int)cmd.LastInsertedId;
@@ -42,7 +48,21 @@ namespace LearningMadeSimple.Models
         public async Task UpdateAsync()
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"UPDATE `Student` SET `first_name`=@first_name, `last_name`=@last_name WHERE `studentId`=@id;";
+            string text = @"UPDATE `Student` SET ";
+            text += @"`degree_id`= @degree_id, ";
+            text += @"`date_admitted`= @date_admitted, ";
+            text += @"`first_name`= @first_name, ";
+            text += @"`last_name`= @last_name, ";
+            text += @"`address`= @address, ";
+            text += @"`city`= @city, ";
+            text += @"`state`= @state, ";
+            text += @"`zip_code`= @zip_code, ";
+            text += @"`phone`= @phone, ";
+            text += @"`email`= @email, ";
+            text += @"`password`= @password, ";
+            text += @"WHERE `studentId`= @id;";
+
+            cmd.CommandText = text;
             BindParams(cmd);
             BindId(cmd);
             await cmd.ExecuteNonQueryAsync();
@@ -225,6 +245,13 @@ namespace LearningMadeSimple.Models
 
             cmd.Parameters.Add(new MySqlParameter
             {
+                ParameterName = "@date_admitted",
+                DbType = DbType.String,
+                Value = Date_admitted,
+            });
+
+            cmd.Parameters.Add(new MySqlParameter
+            {
                 ParameterName = "@first_name",
                 DbType = DbType.String,
                 Value = First_name,
@@ -239,9 +266,51 @@ namespace LearningMadeSimple.Models
 
             cmd.Parameters.Add(new MySqlParameter
             {
+                ParameterName = "@address",
+                DbType = DbType.String,
+                Value = Address,
+            });
+
+            cmd.Parameters.Add(new MySqlParameter
+            {
+                ParameterName = "@city",
+                DbType = DbType.String,
+                Value = City,
+            });
+
+            cmd.Parameters.Add(new MySqlParameter
+            {
+                ParameterName = "@state",
+                DbType = DbType.String,
+                Value = State,
+            });
+
+            cmd.Parameters.Add(new MySqlParameter
+            {
+                ParameterName = "@zip_code",
+                DbType = DbType.Int32,
+                Value = Zip_code,
+            });
+
+            cmd.Parameters.Add(new MySqlParameter
+            {
+                ParameterName = "@phone",
+                DbType = DbType.String,
+                Value = Phone,
+            });
+
+            cmd.Parameters.Add(new MySqlParameter
+            {
                 ParameterName = "@email",
                 DbType = DbType.String,
                 Value = Email,
+            });
+
+            cmd.Parameters.Add(new MySqlParameter
+            {
+                ParameterName = "@password",
+                DbType = DbType.String,
+                Value = Password,
             });
         }
     }

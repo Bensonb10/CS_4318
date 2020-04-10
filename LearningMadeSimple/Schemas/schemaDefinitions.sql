@@ -39,13 +39,13 @@ CREATE TABLE IF NOT EXISTS Student (
     date_admitted date default "2000-01-01",
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
-    address VARCHAR(255) NOT NULL default "TBD",
-    city VARCHAR(255) NOT NULL default "TBD",
-    state VARCHAR(255) NOT NULL default "TBD",
-    zip_code INT NOT NULL default 77024,
-    phone VARCHAR(25) NOT NULL default "TBD",
+    address VARCHAR(255) default "TBD",
+    city VARCHAR(255) default "TBD",
+    state VARCHAR(255)  default "TBD",
+    zip_code INT  default 77024,
+    phone VARCHAR(25) default "TBD",
     email VARCHAR(255) NOT NULL,
-    password VARCHAR(25) NOT NULL default "asdf"
+    password VARCHAR(25)  default "asdf"
 );
 
 CREATE TABLE IF NOT EXISTS Employee (

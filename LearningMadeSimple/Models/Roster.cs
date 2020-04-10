@@ -10,126 +10,188 @@ namespace LearningMadeSimple.Models
 {
     public class Roster: Section
     {
-        public int RosterId { get; set; }
-        public int StudentId { get; set;  }
+        public int Roster_id { get; set; }
+        public Student Student { get; set; }
+        public float Points_Possible { get; set; }
+        public float Points_Earned { get; set; }
+        public float Grade { get; set; }
+        public string Letter { get; set; }
 
         public Roster() { }
-        public Roster(DB db)
-        {
-            Db = db;
-        }
+        public Roster(DB db) { Db = db; }
 
-        public override async Task InsertAsync()
+        public async Task<List<Roster>> GetGradesById(int id)
         {
+            var roster = new List<Roster>();
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"INSERT INTO `Roster` (`studentId`, `sectionId`) VALUES (@studentId, @sectionId);";
-            BindParams(cmd);
-            await cmd.ExecuteNonQueryAsync();
-            RosterId = (int)cmd.LastInsertedId;
-        }
-
-        public override async Task UpdateAsync()
-        {
-            using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"UPDATE `Roster` SET `studentId` = @studentId, `sectionId` = @sectionId WHERE `rosterId` = @id;";
-            BindParams(cmd);
-            BindId(cmd);
-            await cmd.ExecuteNonQueryAsync();
-        }
-
-        public override async Task DeleteAsync()
-        {
-            using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"DELETE FROM `Roster` WHERE `rosterId` = @id;";
-            BindId(cmd);
-            await cmd.ExecuteNonQueryAsync();
-        }
-
-        public new async Task<Roster> FindOneAsync(int id)
-        {
-            using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"SELECT * FROM `Roster` WHERE `rosterId` = @id;";
+            cmd.CommandText = @"CALL SelectGradeByRosterId(@id)";
             cmd.Parameters.Add(new MySqlParameter
             {
                 ParameterName = "@id",
                 DbType = DbType.Int32,
                 Value = id
             });
-            var result = await ReadAllAsync(await cmd.ExecuteReaderAsync());
-            return result.Count > 0 ? result[0] : null;
-        }
-
-        public new async Task<List<Roster>> GetAllAsync()
-        {
-            using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"SELECT Roster.rosterId, Roster.studentId, Section.sectionId, Section.sectionName FROM `Roster` INNER JOIN `Section` ON Roster.sectionId = Section.sectionId;";
-            //cmd.CommandText = "selectRosterByStudentId";
-            //cmd.CommandType = CommandType.StoredProcedure;
-            //cmd.Parameters.AddWithValue("@studentId", 1);
-
-            return await ReadAllAsync(await cmd.ExecuteReaderAsync());
-        }
-
-        private async Task<List<Roster>> ReadAllAsync(DbDataReader reader)
-        {
-            var rosters = new List<Roster>();
+            var reader = await cmd.ExecuteReaderAsync();
 
             using (reader)
             {
-
-                for (int i = 0; i < reader.FieldCount; i++)
-                {
-                    System.Diagnostics.Debug.Write(i + ": " +  reader.GetName(i) + " ");
-                }
-                System.Diagnostics.Debug.Write("\n");
-
                 while (await reader.ReadAsync())
                 {
-                    
-                    for (int i = 0; i < reader.FieldCount; i++)
+                    var enrolled = new Roster(Db)
                     {
-                        System.Diagnostics.Debug.Write(reader.GetString(i) + " ");
-                    }
-                    System.Diagnostics.Debug.Write("\n");
-
-                    var roster = new Roster(Db)
-                    {
-                        RosterId = reader.GetInt32(0),
-                        StudentId = reader.GetInt32(1),
-                        SectionId = reader.GetInt32(2),
-                        Name = reader.GetString(3)
+                        Roster_id = reader.GetInt32(0),
+                        Instructor = new Employee(Db)
+                        {
+                            Employee_id = reader.GetInt32(1),
+                            First_name = reader.GetString(2),
+                            Last_name = reader.GetString(3)
+                        },
+                        Section_id = reader.GetInt32(4),
+                        Room = reader.GetString(5),
+                        DayOfWeek = reader.GetString(6),
+                        Start_time = reader.GetString(7),
+                        End_time = reader.GetString(8),
+                        Points_Possible = reader.GetFloat(9),
+                        Points_Earned = reader.GetFloat(10),
+                        Grade = reader.GetFloat(11),
+                        Letter = reader.GetString(12),
+                        Student = new Student(Db)
+                        {
+                            Student_id = reader.GetInt32(13),
+                            First_name = reader.GetString(14),
+                            Last_name = reader.GetString(15)
+                        }
                     };
-                    rosters.Add(roster);
+                    roster.Add(enrolled);
                 }
             }
-            return rosters;
+            return roster;
         }
 
-        private void BindId(MySqlCommand cmd)
+        public async Task<List<Roster>> GetGradesByClassId(int id)
         {
+            var roster = new List<Roster>();
+            using var cmd = Db.Connection.CreateCommand();
+            cmd.CommandText = @"CALL SelectGradeByClassId(@id)";
             cmd.Parameters.Add(new MySqlParameter
             {
                 ParameterName = "@id",
                 DbType = DbType.Int32,
-                Value = RosterId
+                Value = id
             });
+            var reader = await cmd.ExecuteReaderAsync();
+
+            using (reader)
+            {
+                while (await reader.ReadAsync())
+                {
+                    var enrolled = new Roster(Db)
+                    {
+                        Roster_id = reader.GetInt32(0),
+                        Instructor = new Employee(Db)
+                        {
+                            Employee_id = reader.GetInt32(1),
+                            First_name = reader.GetString(2),
+                            Last_name = reader.GetString(3)
+                        },
+                        Section_id = reader.GetInt32(4),
+                        Room = reader.GetString(5),
+                        DayOfWeek = reader.GetString(6),
+                        Start_time = reader.GetString(7),
+                        End_time = reader.GetString(8),
+                        Points_Possible = reader.GetFloat(9),
+                        Points_Earned = reader.GetFloat(10),
+                        Grade = reader.GetFloat(11),
+                        Letter = reader.GetString(12)
+                    };
+                    roster.Add(enrolled);
+                }
+            }
+            return roster;
         }
 
-        private void BindParams(MySqlCommand cmd)
+        public async Task<List<Roster>> GetGradesByStudentIdAsync(int id)
         {
+            var roster = new List<Roster>();
+            using var cmd = Db.Connection.CreateCommand();
+            cmd.CommandText = @"CALL SelectGradeByStudentId(@id)";
             cmd.Parameters.Add(new MySqlParameter
             {
-                ParameterName = "@sectionId",
+                ParameterName = "@id",
                 DbType = DbType.Int32,
-                Value = SectionId,
+                Value = id
             });
+            var reader = await cmd.ExecuteReaderAsync();
 
+            using (reader)
+            {
+                while (await reader.ReadAsync())
+                {
+                    var enrolled = new Roster(Db)
+                    {
+                        Roster_id = reader.GetInt32(0),
+                        Instructor = new Employee(Db)
+                        {
+                            Employee_id = reader.GetInt32(1),
+                            First_name = reader.GetString(2),
+                            Last_name = reader.GetString(3)
+                        },
+                        Section_id = reader.GetInt32(4),
+                        Room = reader.GetString(5),
+                        DayOfWeek = reader.GetString(6),
+                        Start_time = reader.GetString(7),
+                        End_time = reader.GetString(8),
+                        Points_Possible = reader.GetFloat(9),
+                        Points_Earned = reader.GetFloat(10),
+                        Grade = reader.GetFloat(11),
+                        Letter = reader.GetString(12)
+                    };
+                    roster.Add(enrolled);
+                }
+            }
+            return roster;
+        }
+
+        public async Task<List<Roster>> GetGradesBySectionId(int id)
+        {
+            var roster = new List<Roster>();
+            using var cmd = Db.Connection.CreateCommand();
+            cmd.CommandText = @"CALL SelectGradeForSectionId(@id)";
             cmd.Parameters.Add(new MySqlParameter
             {
-                ParameterName = "@studentId",
+                ParameterName = "@id",
                 DbType = DbType.Int32,
-                Value = StudentId,
+                Value = id
             });
+            var reader = await cmd.ExecuteReaderAsync();
+
+            using (reader)
+            {
+                while (await reader.ReadAsync())
+                {
+                    var enrolled = new Roster(Db)
+                    {
+                        Roster_id = reader.GetInt32(0),
+                        Student = new Student(Db)
+                        {
+                            Student_id = reader.GetInt32(1),
+                            First_name = reader.GetString(2),
+                            Last_name = reader.GetString(3)
+                        },
+                        Section_id = reader.GetInt32(4),
+                        Room = reader.GetString(5),
+                        DayOfWeek = reader.GetString(6),
+                        Start_time = reader.GetString(7),
+                        End_time = reader.GetString(8),
+                        Points_Possible = reader.GetFloat(9),
+                        Points_Earned = reader.GetFloat(10),
+                        Grade = reader.GetFloat(11),
+                        Letter = reader.GetString(12)
+                    };
+                    roster.Add(enrolled);
+                }
+            }
+            return roster;
         }
     }
 }

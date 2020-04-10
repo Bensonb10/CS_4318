@@ -12,62 +12,48 @@ namespace LearningMadeSimple.Controllers
         internal DB Db { get; }
         public RosterController(DB db) { Db = db; }
 
-        // GET: api/roster
-        [HttpGet]
-        public async Task<IActionResult> GetLatest()
-        {
-            await Db.Connection.OpenAsync();
-            var query = new Roster(Db);
-            var result = query.GetAllAsync();
-            return new OkObjectResult(result);
-        }
-        
         // GET: api/roster/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne(int id)
+        public async Task<IActionResult> GetGradesById(int id)
         {
             await Db.Connection.OpenAsync();
             var query = new Roster(Db);
-            var result = query.FindOneAsync(id);
+            var result = await query.GetGradesById(id);
             if (result is null) return new NotFoundResult();
             return new OkObjectResult(result);
         }
 
-        // POST: api/roster
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Roster body)
-        {
-            await Db.Connection.OpenAsync();
-            body.Db = Db;
-            await body.InsertAsync();
-            return new OkObjectResult(body);
-        }
-
-        // PUT: api/roster/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutOne(int id, [FromBody] Roster body)
+        // GET: api/roster/class/5
+        [HttpGet("class/{id}")]
+        public async Task<IActionResult> GetGradesByClassId(int id)
         {
             await Db.Connection.OpenAsync();
             var query = new Roster(Db);
-            var result = await query.FindOneAsync(id);
+            var result = await query.GetGradesByClassId(id);
             if (result is null) return new NotFoundResult();
-
-            result.SectionId = body.SectionId;
-            result.StudentId = body.StudentId;
-            await result.UpdateAsync();
             return new OkObjectResult(result);
         }
 
-        // DELETE: api/roster/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOne(int id)
+        // GET: api/roster/student/5
+        [HttpGet("student/{id}")]
+        public async Task<IActionResult> GetGradesByStudentId(int id)
         {
             await Db.Connection.OpenAsync();
             var query = new Roster(Db);
-            var result = await query.FindOneAsync(id);
+            var result = await query.GetGradesByStudentIdAsync(id);
             if (result is null) return new NotFoundResult();
-            await result.DeleteAsync();
-            return new OkResult();
+            return new OkObjectResult(result);
+        }
+
+        // GET: api/roster/section/5
+        [HttpGet("section/{id}")]
+        public async Task<IActionResult> GetGradesBySectionId(int id)
+        {
+            await Db.Connection.OpenAsync();
+            var query = new Roster(Db);
+            var result = await query.GetGradesBySectionId(id);
+            if (result is null) return new NotFoundResult();
+            return new OkObjectResult(result);
         }
     }
 }

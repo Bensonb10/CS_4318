@@ -18,55 +18,30 @@ namespace LearningMadeSimple.Controllers
         {
             await Db.Connection.OpenAsync();
             var query = new Section(Db);
-            var result = query.GetAllAsync();
+            var result = query.GetSectionsAsync();
             return new OkObjectResult(result);
         }
 
-        // GET: api/student/5
+        // GET: api/section/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne(int id)
+        public async Task<IActionResult> GetSectionById(int id)
         {
             await Db.Connection.OpenAsync();
             var query = new Section(Db);
-            var result = query.FindOneAsync(id);
+            var result = await query.GetSectionsByIdAsync(id);
             if (result is null) return new NotFoundResult();
             return new OkObjectResult(result);
         }
 
-        // POST: api/section
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Section body)
-        {
-            await Db.Connection.OpenAsync();
-            body.Db = Db;
-            await body.InsertAsync();
-            return new OkObjectResult(body);
-        }
-
-        // PUT: api/section/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutOne(int id, [FromBody] Section body)
+        // GET: api/section/class/5
+        [HttpGet("class/{id}")]
+        public async Task<IActionResult> GetSectionByClassId(int id)
         {
             await Db.Connection.OpenAsync();
             var query = new Section(Db);
-            var result = await query.FindOneAsync(id);
+            var result = await query.GetSectionsByClassIdAsync(id);
             if (result is null) return new NotFoundResult();
-
-            result.Name = body.Name;
-            await result.UpdateAsync();
             return new OkObjectResult(result);
-        }
-
-        // DELETE: api/section/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOne(int id)
-        {
-            await Db.Connection.OpenAsync();
-            var query = new Section(Db);
-            var result = await query.FindOneAsync(id);
-            if (result is null) return new NotFoundResult();
-            await result.DeleteAsync();
-            return new OkResult();
         }
     }
 }
