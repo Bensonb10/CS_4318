@@ -1,5 +1,3 @@
-use LearningMadeSimple;
-
 insert into 
 	Department(departmentName) 
 values 

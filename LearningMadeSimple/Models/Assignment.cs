@@ -88,6 +88,55 @@ namespace LearningMadeSimple.Models
             }
         }
 
+        public async Task<Assignment> GetAssignmentByIdAsync(int id)
+        {
+            var assignments = new List<Assignment>();
+            using var cmd = Db.Connection.CreateCommand();
+            string text = @"SELECT ";
+            text += @"Assignment.assn_id, ";
+            text += @"Assignment.assn_type_id, ";
+            text += @"Assignment.section_id, ";
+            text += @"Assignment.assignmentName, ";
+            text += @"Assignment.assignmentDescription, ";
+            text += @"Assignment.date_due, ";
+            text += @"AssignmentType.type, ";
+            text += @"AssignmentType.points_possible ";
+            text += @"FROM Assignment ";
+            text += @"LEFT JOIN AssignmentType ";
+            text += @"ON Assignment.assn_type_id = AssignmentType.assn_type_id ";
+            text += @"WHERE Assignment.assn_id = @id";
+
+            cmd.CommandText = text;
+            cmd.Parameters.Add(new MySqlParameter
+            {
+                ParameterName = "@id",
+                DbType = DbType.Int32,
+                Value = id,
+            });
+            var reader = await cmd.ExecuteReaderAsync();
+
+            using (reader)
+            {
+                while (await reader.ReadAsync())
+                {
+
+                    var assignment = new Assignment(Db)
+                    {
+                        Assn_id = reader.GetInt32(0),
+                        Assn_type_id = reader.GetInt32(1),
+                        Section_id = reader.GetInt32(2),
+                        AssignmentName = reader.GetString(3),
+                        AssignmentDescripion = reader.GetString(4),
+                        Date_due = reader.GetString(5),
+                        Type = reader.GetString(6),
+                        Points_Possible = reader.GetInt32(7)
+                    };
+                    assignments.Add(assignment);
+                }
+                return assignments.Count > 0 ? assignments[0] : null;
+            }
+        }
+
         public async Task<List<Assignment>> GetAssignmentsSectionId(int id)
         {
             var assignments = new List<Assignment>();

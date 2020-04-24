@@ -1,2 +1,0 @@
-CREATE VIEW `Roster` AS
-SELECT * FROM Roster;
